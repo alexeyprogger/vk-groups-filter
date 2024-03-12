@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Фильрация групп
 
 Данный React-проект - реализация простой фильтрации групп. Использована библиотека компонентов ВК (VK UI). Данные хранятся на фейковом REST API, используется модуль Json-server. 
 После клонирования репозитория необходимо выполнить следующие шаги: 
@@ -6,9 +6,6 @@
 2) npm run server (запустить json-server: запустится на порту 3001)
 3) npm start
 
-## Available Scripts
-
-In the project directory, you can run:
 
 ### `npm start`
 
