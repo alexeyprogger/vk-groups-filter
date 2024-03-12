@@ -10,29 +10,41 @@ import {
   ConfigProvider,
   FormItem,
   FormLayoutGroup,
-  Group,
   Panel,
   PanelHeader,
-  PanelHeaderButton,
-  Search,
   Select,
   Spinner,
-  VisuallyHidden,
 } from "@vkontakte/vkui";
 import {
   Icon28SunOutline,
   Icon28MoonOutline,
   Icon32LogoVkColor,
 } from "@vkontakte/icons";
-import React from "react";
+
+interface Filter {
+  privFilter: "0" | "1" | "все";
+  avatarFilter:
+    | "все"
+    | "red"
+    | "green"
+    | "yellow"
+    | "blue"
+    | "purple"
+    | "white"
+    | "orange";
+  friendsFilter: "0" | "1" | "все";
+}
 
 function App() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [appearance, setAppearance] = useState<"dark" | "light">("light");
-  const [privFilter, setPrivFilter] = useState("все");
-  const [avatarFilter, setAvatarFilter] = useState("все");
-  const [friendsFilter, setFriendsFilter] = useState("все");
+  const [filter, setFilter] = useState<Filter>({
+    privFilter: "все",
+    avatarFilter: "все",
+    friendsFilter: "все",
+  });
+
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const getData = async () => {
@@ -52,46 +64,94 @@ function App() {
   }, []);
 
   const privChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    setPrivFilter(e.target.value);
-    setAvatarFilter("все");
-    setAvatarFilter("все");
-    e.target.value == "все"
-      ? setFilteredData(data)
-      : setFilteredData(
-          data.filter(
-            (item) => item["closed"] == Boolean(Number(e.target.value))
-          )
-        );
-  };
-  const avatarChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    setFriendsFilter("все");
-    setPrivFilter("все");
-    setAvatarFilter(e.target.value);
-    console.log(avatarFilter);
+    const { value, name } = e.target;
+    switch (name) {
+      case "avatarFilter":
+        setFilter((prev) => ({
+          ...prev,
+          [name]: value as Filter["avatarFilter"],
+        }));
 
-    e.target.value == "без аватара"
-      ? setFilteredData(
-          data.filter((item) => item["avatar_color"] == undefined)
-        )
-      : e.target.value == "все"
-      ? setFilteredData(data)
-      : setFilteredData(
-          data.filter((item) => item["avatar_color"] == e.target.value)
+        setFilteredData(
+          value != "все"
+            ? data.filter(
+                (item) =>
+                  (filter.friendsFilter == "все"
+                    ? true
+                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+                  (filter.privFilter == "все"
+                    ? true
+                    : item["closed"] == Boolean(Number(filter.privFilter))) &&
+                  item["avatar_color"] == value
+              )
+            : data.filter(
+                (item) =>
+                  (filter.friendsFilter == "все"
+                    ? true
+                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+                  (filter.privFilter == "все"
+                    ? true
+                    : item["closed"] == Boolean(Number(filter.privFilter)))
+              )
         );
-  };
-  const friendsChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    setFriendsFilter(e.target.value);
-    setAvatarFilter("все");
-    setPrivFilter("все");
-    switch (e.target.value) {
-      case "все":
-        setFilteredData(data);
         break;
-      case "друзья":
-        setFilteredData(data.filter((item) => item["friends"] != undefined));
+      case "privFilter":
+        setFilter((prev) => ({
+          ...prev,
+          [name]: value as Filter["privFilter"],
+        }));
+
+        setFilteredData(
+          value != "все"
+            ? data.filter(
+                (item) =>
+                  (filter.friendsFilter == "все"
+                    ? true
+                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+                  (filter.avatarFilter != "все"
+                    ? item["avatar_color"] == filter.avatarFilter
+                    : true) &&
+                  item["closed"] == !!Number(value)
+              )
+            : data.filter(
+                (item) =>
+                  (filter.friendsFilter == "все"
+                    ? true
+                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+                  (filter.avatarFilter != "все"
+                    ? item["avatar_color"] == filter.avatarFilter
+                    : true)
+              )
+        );
         break;
-      case "нет":
-        setFilteredData(data.filter((item) => item["friends"] == undefined));
+      case "friendsFilter":
+        setFilter((prev) => ({
+          ...prev,
+          [name]: value as Filter["friendsFilter"],
+        }));
+
+        setFilteredData(
+          value != "все"
+            ? data.filter(
+                (item) =>
+                  !!item["friends"] == !!Number(value) &&
+                  (filter.avatarFilter != "все"
+                    ? item["avatar_color"] == filter.avatarFilter
+                    : true) &&
+                  (filter.privFilter == "все"
+                    ? true
+                    : item["closed"] == !!Number(filter.privFilter))
+              )
+            : data.filter(
+                (item) =>
+                  (filter.avatarFilter != "все"
+                    ? item["avatar_color"] == filter.avatarFilter
+                    : true) &&
+                  (filter.privFilter == "все"
+                    ? true
+                    : item["closed"] == !!Number(filter.privFilter))
+              )
+        );
         break;
     }
   };
@@ -128,22 +188,23 @@ function App() {
             >
               <FormItem top="Приватность">
                 <Select
-                  value={privFilter}
+                  name="privFilter"
+                  value={filter.privFilter}
                   onChange={privChange}
                   options={[
-                    { label: "Все", value: "все" },
                     { label: "Закрытые", value: "1" },
                     { label: "Открытые", value: "0" },
+                    { label: "Все", value: "все" },
                   ]}
                 />
               </FormItem>
               <FormItem top="Тип аватара">
                 <Select
-                  value={avatarFilter}
-                  onChange={avatarChange}
+                  name="avatarFilter"
+                  value={filter.avatarFilter}
+                  onChange={privChange}
                   options={[
                     { label: "Все", value: "все" },
-                    { label: "Без аватара", value: "без аватара" },
                     { label: "Красный", value: "red" },
                     { label: "Зелёный", value: "green" },
                     { label: "Жёлтый", value: "yellow" },
@@ -156,12 +217,13 @@ function App() {
               </FormItem>
               <FormItem top="Наличие друзей">
                 <Select
-                  value={friendsFilter}
-                  onChange={friendsChange}
+                  name="friendsFilter"
+                  value={filter.friendsFilter}
+                  onChange={privChange}
                   options={[
-                    { label: "Все группы", value: "все" },
-                    { label: "Состоят друзья", value: "друзья" },
-                    { label: "Без друзей", value: "нет" },
+                    { label: "Все", value: "все" },
+                    { label: "Состоят друзья", value: "1" },
+                    { label: "Без друзей", value: "0" },
                   ]}
                 />
               </FormItem>
