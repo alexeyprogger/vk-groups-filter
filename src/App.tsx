@@ -73,26 +73,16 @@ function App() {
         }));
 
         setFilteredData(
-          value != "все"
-            ? data.filter(
-                (item) =>
-                  (filter.friendsFilter == "все"
-                    ? true
-                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
-                  (filter.privFilter == "все"
-                    ? true
-                    : item["closed"] == Boolean(Number(filter.privFilter))) &&
-                  item["avatar_color"] == value
-              )
-            : data.filter(
-                (item) =>
-                  (filter.friendsFilter == "все"
-                    ? true
-                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
-                  (filter.privFilter == "все"
-                    ? true
-                    : item["closed"] == Boolean(Number(filter.privFilter)))
-              )
+          data.filter(
+            (item) =>
+              (filter.friendsFilter == "все"
+                ? true
+                : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+              (filter.privFilter == "все"
+                ? true
+                : item["closed"] == Boolean(Number(filter.privFilter))) &&
+              (value == "все" ? true : item["avatar_color"] == value)
+          )
         );
         break;
       case "privFilter":
@@ -102,26 +92,16 @@ function App() {
         }));
 
         setFilteredData(
-          value != "все"
-            ? data.filter(
-                (item) =>
-                  (filter.friendsFilter == "все"
-                    ? true
-                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
-                  (filter.avatarFilter != "все"
-                    ? item["avatar_color"] == filter.avatarFilter
-                    : true) &&
-                  item["closed"] == !!Number(value)
-              )
-            : data.filter(
-                (item) =>
-                  (filter.friendsFilter == "все"
-                    ? true
-                    : !!item["friends"] == !!Number(filter.friendsFilter)) &&
-                  (filter.avatarFilter != "все"
-                    ? item["avatar_color"] == filter.avatarFilter
-                    : true)
-              )
+          data.filter(
+            (item) =>
+              (filter.friendsFilter == "все"
+                ? true
+                : !!item["friends"] == !!Number(filter.friendsFilter)) &&
+              (filter.avatarFilter != "все"
+                ? item["avatar_color"] == filter.avatarFilter
+                : true) &&
+              (value == "все" ? true : item["closed"] == !!Number(value))
+          )
         );
         break;
       case "friendsFilter":
@@ -131,26 +111,16 @@ function App() {
         }));
 
         setFilteredData(
-          value != "все"
-            ? data.filter(
-                (item) =>
-                  !!item["friends"] == !!Number(value) &&
-                  (filter.avatarFilter != "все"
-                    ? item["avatar_color"] == filter.avatarFilter
-                    : true) &&
-                  (filter.privFilter == "все"
-                    ? true
-                    : item["closed"] == !!Number(filter.privFilter))
-              )
-            : data.filter(
-                (item) =>
-                  (filter.avatarFilter != "все"
-                    ? item["avatar_color"] == filter.avatarFilter
-                    : true) &&
-                  (filter.privFilter == "все"
-                    ? true
-                    : item["closed"] == !!Number(filter.privFilter))
-              )
+          data.filter(
+            (item) =>
+              (value == "все" ? true : !!item["friends"] == !!Number(value)) &&
+              (filter.avatarFilter != "все"
+                ? item["avatar_color"] == filter.avatarFilter
+                : true) &&
+              (filter.privFilter == "все"
+                ? true
+                : item["closed"] == !!Number(filter.privFilter))
+          )
         );
         break;
     }
