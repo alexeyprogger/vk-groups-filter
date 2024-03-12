@@ -13,7 +13,13 @@
   }
 }
 
-.App-header {
+.circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+.wrapper {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
