@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Данный React-проект - реализация простого фильтра групп. Использована библиотека компонентов ВК (VK UI). Данные хранятся на фейковом REST API, используется модуль Json-server.
 
 ## Available Scripts
 
